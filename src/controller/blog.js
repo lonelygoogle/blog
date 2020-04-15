@@ -8,40 +8,64 @@ const getList = (author, keyword) => {
     if (keyword) {
         sql += `and title like '%${keyword}%' `
     }
-    sql += `order by createtime desc;`
+    sql += `order by createTime desc;`
 
     // 返回promise 
     return exec(sql)
 }
 
 const getDetail = (id) => {
-    return [
-        {
-            id: 1,
-            title: '标题1',
-            content: '内容1',
-            creatTime: 1586836765253,
-            author: '黄思沁'
-        }
-    ]
+    const sql = `select * from blogs where id='${id}';`
+    return exec(sql).then((rows) => {
+        return rows[0]
+    })
 }
 
 const newBlog = (blogData = {}) => {
     // blogData是一个博客对象，包含title，content等属性
-    console.log('new blog data is', blogData)
-    return {
-        id: 3 //表示新建博客插入数据里面的3
-    }
+    const title = blogData.title
+    const content = blogData.content
+    const author = blogData.author
+    const createTime = Date.now()
+
+    const sql = `insert into blogs (title,content,createTime,author)
+                 values ('${title}','${content}',${createTime},'${author}')`
+    return exec(sql).then(insertData => {
+        // console.log('insert is ', insertData)
+        return {
+            id: insertData.insertId
+        }
+    })
+
 }
 
-const updateBlog = (id,blogData = {}) => {
-    console.log('update is ', id, blogData)
-    return true
+const updateBlog = (id, blogData = {}) => {
+    const title = blogData.title
+    const content = blogData.content
+    const sql = `
+        update blogs set title='${title}',content='${content}' where id=${id}
+    `
+    return exec(sql).then(updateData => {
+        if (updateData.affectedRows > 0) {
+            return true
+        } else {
+            return false
+        }
+    })
 }
 
-const delBlog = (id) => {
-    console.log('del is ', id)
-    return true
+const delBlog = (id, author) => {
+    const sql = `
+        delete from blogs where id=${id} and author='${author}'
+    `
+    return exec(sql).then(delData => {
+        console.log('删除',delData)
+        if (delData.affectedRows > 0) {
+            return true
+        } else {
+            return false
+        }
+    })
 }
 module.exports = {
     getList,
