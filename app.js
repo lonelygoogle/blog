@@ -41,13 +41,22 @@ const serverHandle = (req,res)=> {
         const blogData = handleBlogRouter(req,res)
         if (blogData) {
             res.end(JSON.stringify(blogData))
+            console.log('blog返回时',blogData)
             return
         }
 
         // 处理user路由
-        const userData = handleUserRouter(req,res)
-        if (userData) {
-            res.end(JSON.stringify(userData))
+
+        // const userData = handleUserRouter(req,res)
+        // if (userData) {
+        //     res.end(JSON.stringify(userData))
+        //     return
+        // }
+        const blogResult = handleUserRouter(req,res)
+        if (blogResult) {
+            blogResult.then((blogData) =>{
+                res.end(JSON.stringify(blogData))
+            })
             return
         }
 
