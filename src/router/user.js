@@ -1,13 +1,7 @@
-/*
- * @Description: 
- * @Author:  
- * @Date: 2020-04-14 17:53:45
- * @LastEditTime: 2020-04-25 21:47:51
- * @LastEditors:  
- */
 
 const { login } = require('../controller/user')
 const { SuccessModel, ErrorModel } =require('../model/resModel')
+const { set } =require('../db/redis')
 
 const handleUserRouter = (req, res) => {
     const method = req.method;
@@ -23,8 +17,11 @@ const handleUserRouter = (req, res) => {
                 // 设置session
                 req.session.username = data.username
                 req.session.realname = data.realname
-                console.log('req.session is', req.session)
-                console.log(Math.random())
+                // console.log('req.session is', req.session)
+                // console.log(Math.random())
+
+                // 同步到session 
+                set(req.sessionId, req.session)
                 return new SuccessModel()
             } else {
                 return new ErrorModel('登陆失败')
